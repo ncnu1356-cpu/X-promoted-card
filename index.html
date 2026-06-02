@@ -11,7 +11,7 @@
     label { font-weight: bold; font-size: 14px; display: block; margin-top: 15px; }
     input, textarea, button, select { width: 100%; padding: 12px; margin: 6px 0 12px 0; border: 1px solid #cfd9de; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
     input:focus, textarea:focus, select:focus { border-color: #1d9bf0; outline: none; }
-    .media-hint { font-size: 12px; color: #536471; margin-top: -8px; margin-bottom: 12px; }
+    .media-hint { font-size: 12px; color: #536471; margin-top: -8px; margin-bottom: 12px; line-height: 1.4; }
     .media-hint a { color: #1d9bf0; text-decoration: none; }
     .media-hint a:hover { text-decoration: underline; }
     .btn-submit { background: #1d9bf0; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.2s; margin-top: 10px;}
@@ -36,14 +36,15 @@
 
     <label for="mediaType">Media Type</label>
     <select id="mediaType">
-      <option value="image">📸 Image (JPG, PNG, GIF)</option>
+      <option value="image">📸 Image / Animated GIF</option>
       <option value="video">🎥 Video (MP4 - Direct Link)</option>
     </select>
 
     <label for="mediaUrl">Media URL</label>
-    <input type="url" id="mediaUrl" placeholder="https://example.com/your-file.jpg or .mp4" required>
+    <input type="url" id="mediaUrl" placeholder="https://example.com/your-file.gif" required>
     <div class="media-hint">
-      💡 Direct links only. For free mp4/image hosting, upload via <a href="https://catbox.moe" target="_blank">catbox.moe</a> and grab the final file URL.
+      ⚠️ <strong>GIF Rule:</strong> Make sure the link ends explicitly in <code>.gif</code> and is under 5MB. <br>
+      For hosting, upload to <a href="https://catbox.moe" target="_blank">catbox.moe</a> and copy the raw file link from their platform.
     </div>
 
     <label for="link">Destination Link (Where the user lands)</label>
@@ -61,12 +62,11 @@
       <span id="cardLink"></span>
       <button class="copy-btn" onclick="copyToClipboard()">📋 Copy</button>
     </div>
-    <p style="font-size: 13px; color: #536471; margin-bottom: 0;">Paste this URL inside any tweet compose box on X.com to display your simulated promo layout profile layout card upon click!</p>
+    <p style="font-size: 13px; color: #536471; margin-bottom: 0; margin-top:10px;">Paste this link onto X.com to preview your generated ad card snippet layout!</p>
     <div id="copySuccess" class="success">Copied to Clipboard successfully!</div>
   </div>
 
   <script>
-    // Modify this if your deployment routing path changes
     const API_URL = window.location.origin === "null" || !window.location.origin ? "https://x-promoted-card.vercel.app/api/card" : `${window.location.origin}/api/card`;
 
     document.getElementById('cardForm').addEventListener('submit', (e) => {
