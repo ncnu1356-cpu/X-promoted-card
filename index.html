@@ -1,63 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>X Promoted Card Generator</title>
   <style>
-    body { font-family: system-ui; max-width: 600px; margin: 2rem auto; padding: 1rem; }
-    input, textarea, button, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-    .link-box { background: #eef; padding: 12px; border-radius: 8px; word-break: break-all; display: flex; gap: 10px; align-items: center; }
-    .link-box span { flex: 1; font-size: 12px; overflow-x: auto; }
-    .copy-btn { background: #1d9bf0; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; width: auto; margin: 0; }
-    .copy-btn:hover { background: #0c8ae0; }
-    .media-hint { font-size: 12px; color: #666; margin-top: -5px; margin-bottom: 10px; }
-    .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; background: #f7f9f9; color: #0f1419; }
+    h1 { font-size: 24px; text-align: center; color: #1d9bf0; }
+    form { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    label { font-weight: bold; font-size: 14px; display: block; margin-top: 15px; }
+    input, textarea, button, select { width: 100%; padding: 12px; margin: 6px 0 12px 0; border: 1px solid #cfd9de; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    input:focus, textarea:focus, select:focus { border-color: #1d9bf0; outline: none; }
+    .media-hint { font-size: 12px; color: #536471; margin-top: -8px; margin-bottom: 12px; }
+    .media-hint a { color: #1d9bf0; text-decoration: none; }
+    .media-hint a:hover { text-decoration: underline; }
+    .btn-submit { background: #1d9bf0; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.2s; margin-top: 10px;}
+    .btn-submit:hover { background: #1a8cd8; }
+    #result { display: none; background: white; margin-top: 2rem; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 2px dashed #1d9bf0;}
+    .link-box { background: #f7f9f9; padding: 14px; border-radius: 8px; border: 1px solid #eff3f4; display: flex; gap: 10px; align-items: center; margin-top: 10px;}
+    .link-box span { flex: 1; font-size: 13px; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #536471; }
+    .copy-btn { background: #0f1419; color: white; border: none; padding: 8px 16px; border-radius: 9999px; cursor: pointer; font-weight: bold; width: auto; margin: 0; }
+    .copy-btn:hover { background: #272c30; }
+    .success { background: #00ba7c; color: white; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; font-size: 14px; text-align: center; font-weight: bold;}
   </style>
 </head>
 <body>
-  <h1>📢 Create Your X Promoted Card</h1>
+
+  <h1>📢 X Promoted Card Generator</h1>
   <form id="cardForm">
-    <label>Title (for preview)</label>
-    <input type="text" id="title" placeholder="Summer Sale" required>
+    <label for="title">Title (Card Headline)</label>
+    <input type="text" id="title" placeholder="e.g., Summer Sale 2026!" required>
 
-    <label>Description (tweet text)</label>
-    <textarea id="desc" rows="3" placeholder="Get 50% off today!" required></textarea>
+    <label for="desc">Description (Post Copy/Tweet Text)</label>
+    <textarea id="desc" rows="3" placeholder="e.g., Get 50% off sitewide. Limited time offer!" required></textarea>
 
-    <label>Media Type</label>
+    <label for="mediaType">Media Type</label>
     <select id="mediaType">
       <option value="image">📸 Image (JPG, PNG, GIF)</option>
-      <option value="video">🎥 Video (MP4 - Auto Play, Click to Redirect)</option>
+      <option value="video">🎥 Video (MP4 - Direct Link)</option>
     </select>
 
-    <label>Media URL (Image or Video direct link)</label>
-    <input type="url" id="mediaUrl" placeholder="https://example.com/photo.jpg OR https://example.com/video.mp4" required>
+    <label for="mediaUrl">Media URL</label>
+    <input type="url" id="mediaUrl" placeholder="https://example.com/your-file.jpg or .mp4" required>
     <div class="media-hint">
-      💡 Video ke liye direct .mp4 link chahiye. Free service: 
-      <a href="https://catbox.moe" target="_blank">catbox.moe</a> par upload karein, wahan se link copy karein.
+      💡 Direct links only. For free mp4/image hosting, upload via <a href="https://catbox.moe" target="_blank">catbox.moe</a> and grab the final file URL.
     </div>
 
-    <label>Destination link (click karne par yahan jayega)</label>
-    <input type="url" id="link" placeholder="https://yoursite.com/sale" required>
+    <label for="link">Destination Link (Where the user lands)</label>
+    <input type="url" id="link" placeholder="https://yourwebsite.com/landing-page" required>
 
-    <label>Button text (e.g., Shop Now)</label>
+    <label for="cta">Button Call-To-Action (CTA)</label>
     <input type="text" id="cta" value="Learn More" required>
 
-    <button type="submit">🚀 Generate X Card Link</button>
+    <button type="submit" class="btn-submit">🚀 Generate Promo Link</button>
   </form>
 
-  <div id="result" style="display:none; margin-top: 2rem;">
-    <h3>✅ Copy this link and paste it into X.com (Twitter)</h3>
+  <div id="result">
+    <h3 style="margin-top:0;">✅ Copy your optimized link below:</h3>
     <div class="link-box">
       <span id="cardLink"></span>
       <button class="copy-btn" onclick="copyToClipboard()">📋 Copy</button>
     </div>
-    <p>⬆️ Is link ko copy karke X (Twitter) par paste karein. Promoted ad preview dikhega!</p>
-    <div id="copySuccess" class="success">✅ Copied to clipboard!</div>
+    <p style="font-size: 13px; color: #536471; margin-bottom: 0;">Paste this URL inside any tweet compose box on X.com to display your simulated promo layout profile layout card upon click!</p>
+    <div id="copySuccess" class="success">Copied to Clipboard successfully!</div>
   </div>
 
   <script>
-    let API_URL = "https://x-promoted-card.vercel.app/api/card";
+    // Modify this if your deployment routing path changes
+    const API_URL = window.location.origin === "null" || !window.location.origin ? "https://x-promoted-card.vercel.app/api/card" : `${window.location.origin}/api/card`;
 
     document.getElementById('cardForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -73,6 +83,7 @@
       
       document.getElementById('cardLink').innerText = cardUrl;
       document.getElementById('result').style.display = 'block';
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
     });
 
     function copyToClipboard() {
@@ -80,9 +91,7 @@
       navigator.clipboard.writeText(linkText).then(() => {
         const successMsg = document.getElementById('copySuccess');
         successMsg.style.display = 'block';
-        setTimeout(() => {
-          successMsg.style.display = 'none';
-        }, 2000);
+        setTimeout(() => { successMsg.style.display = 'none'; }, 2500);
       });
     }
   </script>
