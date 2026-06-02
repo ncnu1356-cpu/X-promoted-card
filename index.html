@@ -6,11 +6,13 @@
   <title>X Promoted Card Generator</title>
   <style>
     body { font-family: system-ui; max-width: 600px; margin: 2rem auto; padding: 1rem; }
-    input, textarea, button, select { width: 100%; padding: 8px; margin: 8px 0; }
-    .link-box { background: #eef; padding: 10px; border-radius: 8px; word-break: break-all; }
+    input, textarea, button, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+    .link-box { background: #eef; padding: 12px; border-radius: 8px; word-break: break-all; display: flex; gap: 10px; align-items: center; }
+    .link-box span { flex: 1; font-size: 12px; overflow-x: auto; }
+    .copy-btn { background: #1d9bf0; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; width: auto; margin: 0; }
+    .copy-btn:hover { background: #0c8ae0; }
     .media-hint { font-size: 12px; color: #666; margin-top: -5px; margin-bottom: 10px; }
-    .preview-area { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 8px; display: none; }
-    video, img { max-width: 100%; border-radius: 8px; }
+    .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
@@ -24,86 +26,65 @@
 
     <label>Media Type</label>
     <select id="mediaType">
-      <option value="image">Photo / Image (Upload)</option>
-      <option value="video">Video (Upload - Auto Play)</option>
+      <option value="image">📸 Image (JPG, PNG, GIF)</option>
+      <option value="video">🎥 Video (MP4 - Auto Play, Click to Redirect)</option>
     </select>
 
-    <label>Upload Media (Photo or Video)</label>
-    <input type="file" id="mediaFile" accept="image/*,video/mp4,video/mov,video/avi">
-    <div class="media-hint">📸 Image: JPG, PNG, GIF | 🎥 Video: MP4 (10MB tak)</div>
-
-    <div id="previewArea" class="preview-area">
-      <p>Preview:</p>
-      <div id="previewContent"></div>
+    <label>Media URL (Image or Video direct link)</label>
+    <input type="url" id="mediaUrl" placeholder="https://example.com/photo.jpg OR https://example.com/video.mp4" required>
+    <div class="media-hint">
+      💡 Video ke liye direct .mp4 link chahiye. Free service: 
+      <a href="https://catbox.moe" target="_blank">catbox.moe</a> par upload karein, wahan se link copy karein.
     </div>
 
-    <label>Destination link (where people go when they click)</label>
+    <label>Destination link (click karne par yahan jayega)</label>
     <input type="url" id="link" placeholder="https://yoursite.com/sale" required>
 
     <label>Button text (e.g., Shop Now)</label>
     <input type="text" id="cta" value="Learn More" required>
 
-    <button type="submit">Generate X Card Link</button>
+    <button type="submit">🚀 Generate X Card Link</button>
   </form>
 
   <div id="result" style="display:none; margin-top: 2rem;">
     <h3>✅ Copy this link and paste it into X.com (Twitter)</h3>
-    <div class="link-box" id="cardLink"></div>
-    <p>When you paste it on X, you'll see a promoted ad preview.</p>
+    <div class="link-box">
+      <span id="cardLink"></span>
+      <button class="copy-btn" onclick="copyToClipboard()">📋 Copy</button>
+    </div>
+    <p>⬆️ Is link ko copy karke X (Twitter) par paste karein. Promoted ad preview dikhega!</p>
+    <div id="copySuccess" class="success">✅ Copied to clipboard!</div>
   </div>
 
   <script>
     let API_URL = "https://x-promoted-card.vercel.app/api/card";
-    let uploadedMediaUrl = "";
-
-    // Preview functionality
-    const mediaFile = document.getElementById('mediaFile');
-    const previewArea = document.getElementById('previewArea');
-    const previewContent = document.getElementById('previewContent');
-    const mediaType = document.getElementById('mediaType');
-
-    mediaFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const url = URL.createObjectURL(file);
-      const type = mediaType.value;
-      
-      previewArea.style.display = 'block';
-      
-      if (type === 'image') {
-        previewContent.innerHTML = `<img src="${url}" style="max-width:100%; max-height:200px;">`;
-      } else {
-        previewContent.innerHTML = `<video src="${url}" controls style="max-width:100%; max-height:200px;"></video>`;
-      }
-      
-      // Convert to base64 or store for later
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        uploadedMediaUrl = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
 
     document.getElementById('cardForm').addEventListener('submit', (e) => {
       e.preventDefault();
       
-      if (!uploadedMediaUrl) {
-        alert("Please upload a media file first!");
-        return;
-      }
-      
       const title = encodeURIComponent(document.getElementById('title').value);
       const desc = encodeURIComponent(document.getElementById('desc').value);
-      const mediaTypeValue = mediaType.value;
+      const mediaType = document.getElementById('mediaType').value;
+      const mediaUrl = encodeURIComponent(document.getElementById('mediaUrl').value);
       const link = encodeURIComponent(document.getElementById('link').value);
       const cta = encodeURIComponent(document.getElementById('cta').value);
-      const mediaData = encodeURIComponent(uploadedMediaUrl);
       
-      const cardUrl = `${API_URL}?title=${title}&desc=${desc}&mediaType=${mediaTypeValue}&mediaData=${mediaData}&link=${link}&cta=${cta}`;
+      const cardUrl = `${API_URL}?title=${title}&desc=${desc}&mediaType=${mediaType}&mediaUrl=${mediaUrl}&link=${link}&cta=${cta}`;
+      
       document.getElementById('cardLink').innerText = cardUrl;
       document.getElementById('result').style.display = 'block';
     });
+
+    function copyToClipboard() {
+      const linkText = document.getElementById('cardLink').innerText;
+      navigator.clipboard.writeText(linkText).then(() => {
+        const successMsg = document.getElementById('copySuccess');
+        successMsg.style.display = 'block';
+        setTimeout(() => {
+          successMsg.style.display = 'none';
+        }, 2000);
+      });
+    }
   </script>
 </body>
 </html>
