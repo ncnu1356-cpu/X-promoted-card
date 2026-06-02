@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>X Promoted Card Generator</title>
+  <style>
+    body { font-family: system-ui; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+    input, textarea, button { width: 100%; padding: 8px; margin: 8px 0; }
+    .link-box { background: #eef; padding: 10px; border-radius: 8px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>📢 Create Your X Promoted Card</h1>
+  <form id="cardForm">
+    <label>Title (for preview)</label>
+    <input type="text" id="title" placeholder="Summer Sale" required>
+
+    <label>Description (tweet text)</label>
+    <textarea id="desc" rows="3" placeholder="Get 50% off today!" required></textarea>
+
+    <label>Image URL (must start with https://)</label>
+    <input type="url" id="image" placeholder="https://example.com/photo.jpg" required>
+
+    <label>Destination link (where people go when they click)</label>
+    <input type="url" id="link" placeholder="https://yoursite.com/sale" required>
+
+    <label>Button text (e.g., Shop Now)</label>
+    <input type="text" id="cta" value="Learn More" required>
+
+    <button type="submit">Generate X Card Link</button>
+  </form>
+
+  <div id="result" style="display:none; margin-top: 2rem;">
+    <h3>✅ Copy this link and paste it into X.com (Twitter)</h3>
+    <div class="link-box" id="cardLink"></div>
+    <p>When you paste it on X, you'll see a promoted ad preview.</p>
+  </div>
+
+  <script>
+    // Change this to your Glitch project name after you see it
+    let GLITCH_NAME = "YOUR-GLITCH-NAME"; // You'll update this
+
+    document.getElementById('cardForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = encodeURIComponent(document.getElementById('title').value);
+      const desc = encodeURIComponent(document.getElementById('desc').value);
+      const image = encodeURIComponent(document.getElementById('image').value);
+      const link = encodeURIComponent(document.getElementById('link').value);
+      const cta = encodeURIComponent(document.getElementById('cta').value);
+      const cardUrl = `https://${GLITCH_NAME}.glitch.me/card.html?title=${title}&desc=${desc}&image=${image}&link=${link}&cta=${cta}`;
+      document.getElementById('cardLink').innerText = cardUrl;
+      document.getElementById('result').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
