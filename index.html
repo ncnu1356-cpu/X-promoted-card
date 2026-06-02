@@ -6,8 +6,11 @@
   <title>X Promoted Card Generator</title>
   <style>
     body { font-family: system-ui; max-width: 600px; margin: 2rem auto; padding: 1rem; }
-    input, textarea, button { width: 100%; padding: 8px; margin: 8px 0; }
+    input, textarea, button, select { width: 100%; padding: 8px; margin: 8px 0; }
     .link-box { background: #eef; padding: 10px; border-radius: 8px; word-break: break-all; }
+    .media-hint { font-size: 12px; color: #666; margin-top: -5px; margin-bottom: 10px; }
+    .preview-area { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 8px; display: none; }
+    video, img { max-width: 100%; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -19,8 +22,20 @@
     <label>Description (tweet text)</label>
     <textarea id="desc" rows="3" placeholder="Get 50% off today!" required></textarea>
 
-    <label>Image URL (must start with https://)</label>
-    <input type="url" id="image" placeholder="https://picsum.photos/800/418" required>
+    <label>Media Type</label>
+    <select id="mediaType">
+      <option value="image">Photo / Image (Upload)</option>
+      <option value="video">Video (Upload - Auto Play)</option>
+    </select>
+
+    <label>Upload Media (Photo or Video)</label>
+    <input type="file" id="mediaFile" accept="image/*,video/mp4,video/mov,video/avi">
+    <div class="media-hint">📸 Image: JPG, PNG, GIF | 🎥 Video: MP4 (10MB tak)</div>
+
+    <div id="previewArea" class="preview-area">
+      <p>Preview:</p>
+      <div id="previewContent"></div>
+    </div>
 
     <label>Destination link (where people go when they click)</label>
     <input type="url" id="link" placeholder="https://yoursite.com/sale" required>
@@ -38,17 +53,54 @@
   </div>
 
   <script>
-    // Vercel API URL - aapke deploy ka link
     let API_URL = "https://x-promoted-card.vercel.app/api/card";
+    let uploadedMediaUrl = "";
+
+    // Preview functionality
+    const mediaFile = document.getElementById('mediaFile');
+    const previewArea = document.getElementById('previewArea');
+    const previewContent = document.getElementById('previewContent');
+    const mediaType = document.getElementById('mediaType');
+
+    mediaFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const url = URL.createObjectURL(file);
+      const type = mediaType.value;
+      
+      previewArea.style.display = 'block';
+      
+      if (type === 'image') {
+        previewContent.innerHTML = `<img src="${url}" style="max-width:100%; max-height:200px;">`;
+      } else {
+        previewContent.innerHTML = `<video src="${url}" controls style="max-width:100%; max-height:200px;"></video>`;
+      }
+      
+      // Convert to base64 or store for later
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        uploadedMediaUrl = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
 
     document.getElementById('cardForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      
+      if (!uploadedMediaUrl) {
+        alert("Please upload a media file first!");
+        return;
+      }
+      
       const title = encodeURIComponent(document.getElementById('title').value);
       const desc = encodeURIComponent(document.getElementById('desc').value);
-      const image = encodeURIComponent(document.getElementById('image').value);
+      const mediaTypeValue = mediaType.value;
       const link = encodeURIComponent(document.getElementById('link').value);
       const cta = encodeURIComponent(document.getElementById('cta').value);
-      const cardUrl = `${API_URL}?title=${title}&desc=${desc}&image=${image}&link=${link}&cta=${cta}`;
+      const mediaData = encodeURIComponent(uploadedMediaUrl);
+      
+      const cardUrl = `${API_URL}?title=${title}&desc=${desc}&mediaType=${mediaTypeValue}&mediaData=${mediaData}&link=${link}&cta=${cta}`;
       document.getElementById('cardLink').innerText = cardUrl;
       document.getElementById('result').style.display = 'block';
     });
