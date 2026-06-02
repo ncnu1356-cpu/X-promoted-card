@@ -8,12 +8,10 @@ export default function handler(req, res) {
   const finalMediaType = mediaType || 'image';
   const finalMediaUrl = mediaUrl || 'https://via.placeholder.com/800x418.png?text=Ad+Image';
 
-  // Fallback image rule for standard X/Twitter cards when dealing with raw streaming MP4
-  const twitterCardImage = finalMediaType === 'image' 
-    ? finalMediaUrl 
-    : 'https://via.placeholder.com/800x418.png?text=Click+to+Play+Video+Ad';
+  // Force X card crawler to parse the GIF as a large responsive image target block
+  const twitterCardImage = finalMediaUrl;
 
-  // Format clickable layout preview based on configuration types
+  // Render logic for interactive mock dashboard page frame
   const mediaHtml = finalMediaType === 'video' 
     ? `<a href="${escapeHtml(destinationUrl)}" target="_blank" style="display:block; text-decoration:none;">
          <video autoplay muted loop playsinline style="width:100%; max-height: 400px; object-fit: cover; border-radius:16px; margin:12px 0; border: 1px solid #eff3f4; background: #000;">
@@ -22,7 +20,7 @@ export default function handler(req, res) {
          </video>
        </a>`
     : `<a href="${escapeHtml(destinationUrl)}" target="_blank" style="display:block;">
-         <img src="${escapeHtml(finalMediaUrl)}" alt="Ad Asset" style="width:100%; border-radius:16px; margin:12px 0; border: 1px solid #eff3f4;">
+         <img src="${escapeHtml(finalMediaUrl)}" alt="Ad Asset" style="width:100%; border-radius:16px; margin:12px 0; border: 1px solid #eff3f4; display:block;">
        </a>`;
 
   const html = `<!DOCTYPE html>
@@ -36,6 +34,7 @@ export default function handler(req, res) {
   <meta name="twitter:title" content="${escapeHtml(metaTitle)}">
   <meta name="twitter:description" content="${escapeHtml(metaDesc)}">
   <meta name="twitter:image" content="${escapeHtml(twitterCardImage)}">
+  
   <meta property="og:title" content="${escapeHtml(metaTitle)}">
   <meta property="og:description" content="${escapeHtml(metaDesc)}">
   <meta property="og:image" content="${escapeHtml(twitterCardImage)}">
