@@ -20,7 +20,7 @@
     <textarea id="desc" rows="3" placeholder="Get 50% off today!" required></textarea>
 
     <label>Image URL (must start with https://)</label>
-    <input type="url" id="image" placeholder="https://example.com/photo.jpg" required>
+    <input type="url" id="image" placeholder="https://picsum.photos/800/418" required>
 
     <label>Destination link (where people go when they click)</label>
     <input type="url" id="link" placeholder="https://yoursite.com/sale" required>
@@ -38,8 +38,8 @@
   </div>
 
   <script>
-    // Change this to your Glitch project name after you see it
-    let GLITCH_NAME = "YOUR-GLITCH-NAME"; // You'll update this
+    // Vercel API URL - aapke deploy ka link
+    let API_URL = "https://x-promoted-card.vercel.app/api/card";
 
     document.getElementById('cardForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -48,7 +48,7 @@
       const image = encodeURIComponent(document.getElementById('image').value);
       const link = encodeURIComponent(document.getElementById('link').value);
       const cta = encodeURIComponent(document.getElementById('cta').value);
-      const cardUrl = `https://${GLITCH_NAME}.glitch.me/card.html?title=${title}&desc=${desc}&image=${image}&link=${link}&cta=${cta}`;
+      const cardUrl = `${API_URL}?title=${title}&desc=${desc}&image=${image}&link=${link}&cta=${cta}`;
       document.getElementById('cardLink').innerText = cardUrl;
       document.getElementById('result').style.display = 'block';
     });
